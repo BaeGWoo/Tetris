@@ -21,15 +21,12 @@ namespace Tetris
         int level = 0;        //현재 단계 ->모양크기 || 내려오는 속도 조절
         int score = 0;        //사라진 line의 수
 
+
         int[,] map = new int[25, 18];
-
-        public void SetMap(int x,int y)
-        {
-            map[x, y] = 1;
-            DrawBaseMap();
-        }
-
-
+        Shape shape=new Shape();
+        int[,] nextShape;
+        int[,] mainShape=new int[4,2];
+        string[] shapeN;
         public void WriteHelp()
         {
             int padding = 3;
@@ -50,18 +47,127 @@ namespace Tetris
             Console.WriteLine("↓ : 빠른 낙하");
         }// 도움말
 
+
         public void ShowNextShape()
         {
             Console.SetCursorPosition(90, 3);
-            Console.WriteLine("[ Next ]");
+            Console.WriteLine("[  Next  ]");
+
+            nextShape = new int[5, 5];
+            Random rand = new Random();
+            shapeN = shape.SetNextShape(rand.Next(0,5));
+            //string[] shapeN = shape.SetNextShape(4);
+            for (int i=0;i<shapeN.Length;i++)
+            {
+                int Num = int.Parse(shapeN[i]);
+                int x = Num / 10;
+                int y=Num % 10;
+
+                nextShape[x, y] = 1;
+            }
+          
+            for (int i = 0; i <= shapeN.Length; i++)
+            {
+                Console.SetCursorPosition(89, 5 + i);
+                for (int j = 0; j <= shapeN.Length; j++)
+                {
+                    if (nextShape[i, j] == 1)
+                    {
+                        Console.Write("■");
+                    }
+                    else
+                    {
+                        Console.Write("  ");
+                    }
+
+                }
+               
+            }
+
+
         }
+        
+        public void SetMainShape()
+        {
+            string[] temp = shapeN;
+            for(int i=0; i<temp.Length; i++)
+            {
+                int cur = int.Parse(temp[i]);
+                int x=cur / 10;
+                int y=cur % 10;
+
+                temp[i] = "" + x + (y + 5);
+            }
+
+
+            for (int i = 0; i < temp.Length; i++)
+            {
+                int cur = int.Parse(temp[i]);
+                int x = cur / 10;
+                int y = cur % 10;
+
+                map[x, y+1] = 1;
+                mainShape[i, 0] = x;
+                mainShape[i, 1] = y + 1;
+            }
+        }
+        
+        public bool CheckDown()
+        {
+            bool check = true;
+            for(int i=0;i<mainShape.GetLength(0);i++) {
+                int x = mainShape[i, 0];
+                int y = mainShape[i, 1];
+
+                if (map[x+1,y]!=0)
+                {
+                    check = false;
+                    break;
+                }
+            }
+            return check;
+        }//-----------------------------------------------------------------> 판정기준 필요
+
+        public void MainShapeMove()
+        {
+
+
+            if (true)//----------------->CheckDown()
+            {
+                for (int i = 0; i < mainShape.GetLength(0); i++)
+                {
+                    int x = mainShape[i, 0];
+                    int y = mainShape[i, 1];
+
+                    map[x, y] = 0;
+
+                    mainShape[i, 0]++;
+                }
+
+                for (int i = 0; i < mainShape.GetLength(0); i++)
+                {
+                    int x = mainShape[i, 0];
+                    int y = mainShape[i, 1];
+
+                    map[x, y] = 1;
+                }
+
+                DrawBaseMap();
+            }
+        }
+        
+        
         public void DrawBaseMap()
         {
             Console.SetWindowSize(width, height);
             int row=map.GetLength(0);
             int col=map.GetLength(1);
+
+
             WriteHelp();
-           ShowNextShape();
+           //ShowNextShape();----------------------------------->CheckDown()이 false가 될 경우 실행
+            //SetMainShape();
+
 
             for (int i=0;i<map.GetLength(0); i++)
             {
