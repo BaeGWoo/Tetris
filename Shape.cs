@@ -18,47 +18,70 @@ namespace Tetris
             {"22","23","24","13" }
         };
 
-        public string[] RotateShape(string[] shape)
+        public void RotateShape(int[,] shape, int[,] map)
         {
-            string[] result = shape;
-            int pivot = int.Parse(shape[0]);
-            int minrow = pivot / 10;
-            int mincol = pivot % 10;
+            
+            int Bmaxrow = shape[0, 0];
+            int Bmincol = shape[0,1];
 
-            for(int i = 0; i < shape.Length; i++)
+            for (int i = 0; i < shape.GetLength(0); i++)
             {
-                int temppivot = int.Parse(shape[i]);
-                int tempminrow = pivot / 10;
-                int tempmincol = pivot % 10;
 
-                if (tempmincol <= mincol)
-                {
-                    if (tempminrow <= minrow)
-                    {
-                        mincol = tempmincol;
-                        minrow= tempminrow;
-                    }
-                }
+                map[shape[i, 0], shape[i, 1]] = 0;
             }
 
 
-            for (int i = 0; i < shape.Length; i++)
+            for (int i = 0; i < shape.GetLength(0); i++)
             {
-                int temppivot = int.Parse(shape[i]);
-                int temprow = pivot / 10;
-                int tempcol = pivot % 10;
 
-                int margin = tempcol + mincol;
+                if (shape[i,1]<= Bmincol)
+                    Bmincol = shape[i,1];
 
-                string temp = "";
-                tempcol = margin - tempcol;
-                temp = temp + tempcol + temprow;
-                shape[i] = temp;
+                if (shape[i,0]>= Bmaxrow)
+                    Bmaxrow = shape[i,0];
+
+             
             }
 
 
+           
 
-            return result;
+            for (int i = 0; i < shape.GetLength(0); i++)
+            {
+
+                int x = shape[i, 0];
+                int y = shape[i, 1];
+                int temp;
+                temp = x;
+                shape[i, 0] = -1 * shape[i, 1];
+                shape[i, 1] = temp;
+             
+            }
+
+
+            int Amaxrow = shape[0, 0];
+            int Amincol = shape[0, 1];
+
+            for (int i = 0; i < shape.GetLength(0); i++)
+            {
+
+                if (shape[i, 1] <= Amincol)
+                    Amincol = shape[i, 1];
+
+                if (shape[i, 0] >= Amaxrow)
+                    Amaxrow = shape[i, 0];
+            }
+
+            int rowmargin=Math.Abs(Amaxrow-Bmaxrow);
+            int colmargin=Math.Abs(Amincol-Bmincol);
+
+            for (int i = 0; i < shape.GetLength(0); i++)
+            {
+                shape[i, 0] += rowmargin;
+                shape[i, 1] += colmargin;
+            }
+
+
         }
 
 

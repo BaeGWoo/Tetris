@@ -7,7 +7,8 @@ namespace Tetris
         static Map map = new Map();
         static void MoveDown(Map map)
         {
-            map.MainShapeMove();
+            if (!map.Rotate)
+                map.MainShapeMove();
         }
 
 
@@ -18,8 +19,12 @@ namespace Tetris
 
         static void Main(string[] args)
         {
+            bool rotate = false;
+
             map.ShowNextShape();
             map.SetMainShape();
+            map.ShowNextShape();
+
             map.DrawBaseMap();
             Console.Write("");
             DateTime nowDate = DateTime.Now;
@@ -28,12 +33,33 @@ namespace Tetris
 
 
             System.Timers.Timer timer = new System.Timers.Timer();
-            timer.Interval = 1000;
+            timer.Interval = 500;
             timer.Elapsed += new ElapsedEventHandler(CountDown);
             timer.Start();
 
 
             while (true) {
+
+
+                ConsoleKeyInfo key = Console.ReadKey(true);
+                switch (key.Key)
+                {
+
+                    case ConsoleKey.UpArrow:
+                        map.RotateShape();
+                        break;
+
+                    case ConsoleKey.LeftArrow:
+                        map.LeftMove = true;
+                        break;
+
+                    case ConsoleKey.RightArrow:
+                        map.RightMove = true;
+                        break;
+                    case ConsoleKey.DownArrow:
+                        map.MainShapeMove();
+                        break;
+                }
                
                           }
 

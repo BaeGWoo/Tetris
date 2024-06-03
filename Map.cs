@@ -21,6 +21,13 @@ namespace Tetris
         int level = 0;        //현재 단계 ->모양크기 || 내려오는 속도 조절
         int score = 0;        //사라진 line의 수
 
+        int curx = 0;
+        int cury = 5;
+        bool mainCheck = true;
+
+        public bool LeftMove = false;
+        public bool RightMove = false;
+        public bool Rotate = false;
 
         int[,] map = new int[25, 18];
         Shape shape=new Shape();
@@ -46,7 +53,6 @@ namespace Tetris
             Console.SetCursorPosition(padding, margin + 6);
             Console.WriteLine("↓ : 빠른 낙하");
         }// 도움말
-
 
         public void ShowNextShape()
         {
@@ -106,20 +112,20 @@ namespace Tetris
                 int x = cur / 10;
                 int y = cur % 10;
 
-                map[x, y+1] = 1;
+                map[x, y+1] = 2;
                 mainShape[i, 0] = x;
                 mainShape[i, 1] = y + 1;
             }
         }
-        
+
         public bool CheckDown()
         {
             bool check = true;
-            for(int i=0;i<mainShape.GetLength(0);i++) {
+            for (int i = 0; i < mainShape.GetLength(0); i++) {
                 int x = mainShape[i, 0];
                 int y = mainShape[i, 1];
 
-                if (map[x+1,y]!=0)
+                if (map[x + 1, y]==1)
                 {
                     check = false;
                     break;
@@ -128,11 +134,44 @@ namespace Tetris
             return check;
         }//-----------------------------------------------------------------> 판정기준 필요
 
+        public bool CheckLeft()
+        {
+            bool check = true;
+            for (int i = 0; i < mainShape.GetLength(0); i++)
+            {
+                int x = mainShape[i, 0];
+                int y = mainShape[i, 1];
+
+                if (map[x, y-1] == 1)
+                {
+                    check = false;
+                    break;
+                }
+            }
+            return check;
+        }
+
+        public bool CheckRight()
+        {
+            bool check = true;
+            for (int i = 0; i < mainShape.GetLength(0); i++)
+            {
+                int x = mainShape[i, 0];
+                int y = mainShape[i, 1];
+
+                if (map[x, y + 1] == 1)
+                {
+                    check = false;
+                    break;
+                }
+            }
+            return check;
+        }
+
         public void MainShapeMove()
         {
-
-
-            if (true)//----------------->CheckDown()
+           
+            if (CheckDown())//----------------->CheckDown()
             {
                 for (int i = 0; i < mainShape.GetLength(0); i++)
                 {
@@ -149,11 +188,90 @@ namespace Tetris
                     int x = mainShape[i, 0];
                     int y = mainShape[i, 1];
 
-                    map[x, y] = 1;
+                    map[x, y] = 2;
                 }
 
                 DrawBaseMap();
+            }//아래 움직임이 막히지 않았을 경우 아래로 이동
+
+            else
+            {
+                for (int i = 0; i < mainShape.GetLength(0); i++)
+                {
+                    int x = mainShape[i, 0];
+                    int y = mainShape[i, 1];
+                    map[x, y] = 1;
+                }
+                SetMainShape();
+                ShowNextShape();
+                DrawBaseMap();
             }
+
+
+            if (LeftMove)
+            {
+                if (CheckLeft())
+                {
+                    for (int i = 0; i < mainShape.GetLength(0); i++)
+                    {
+                        int x = mainShape[i, 0];
+                        int y = mainShape[i, 1];
+
+                        map[x, y] = 0;
+
+                        mainShape[i, 1]--;
+                    }
+
+                    for (int i = 0; i < mainShape.GetLength(0); i++)
+                    {
+                        int x = mainShape[i, 0];
+                        int y = mainShape[i, 1];
+
+                        map[x, y] = 2;
+                    }
+
+                    DrawBaseMap();
+                    LeftMove = false;
+                }
+            }
+
+            if (RightMove)
+            {
+                if (CheckRight())
+                {
+                    for (int i = 0; i < mainShape.GetLength(0); i++)
+                    {
+                        int x = mainShape[i, 0];
+                        int y = mainShape[i, 1];
+
+                        map[x, y] = 0;
+
+                        mainShape[i, 1]++;
+                    }
+
+                    for (int i = 0; i < mainShape.GetLength(0); i++)
+                    {
+                        int x = mainShape[i, 0];
+                        int y = mainShape[i, 1];
+
+                        map[x, y] = 2;
+                    }
+
+                    DrawBaseMap();
+                    RightMove = false;
+                }
+            }
+
+
+            
+        }
+        
+        public void RotateShape()
+        {
+            Rotate = true;
+            shape.RotateShape(mainShape,map);
+            DrawBaseMap();
+            Rotate = false;
         }
         
         
@@ -165,10 +283,7 @@ namespace Tetris
 
 
             WriteHelp();
-           //ShowNextShape();----------------------------------->CheckDown()이 false가 될 경우 실행
-            //SetMainShape();
-
-
+         
             for (int i=0;i<map.GetLength(0); i++)
             {
                 map[i, 0] = 1;
@@ -186,7 +301,7 @@ namespace Tetris
                 Console.SetCursorPosition(mapRow, mapCol + i);
                 for (int j=0; j<map.GetLength(1) ; j++)
                 {
-                    if (map[i, j] == 1)
+                    if (map[i, j] == 1 || map[i,j]==2)
                     {
                         Console.Write("■");
                     }
