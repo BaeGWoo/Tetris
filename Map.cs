@@ -97,50 +97,55 @@ namespace Tetris
                     {
                         buffer.Draw(j, i, "■");
                     }
-                }
-            }
-        }
 
-        public void ShowNextShape(int[,] next)
-       {
-           Console.SetCursorPosition(90, 3);
-           Console.WriteLine("[  Next  ]");
-            for (int i = 0; i < nextShape.GetLength(0); i++)
-            {
-                for (int j = 0; j < nextShape.GetLength(1); j++)
-                {
-                    nextShape[i, j] = 0;
-                }
-            }
-
-
-            for (int i = 0; i < next.GetLength(0); i++)
-            {
-                nextShape[next[i, 0]-2, next[i, 1]-6] = 1;         
-            }
-
-            for (int i = 0; i < nextShape.GetLength(0); i++)
-            {
-                Console.SetCursorPosition(89, 5 + i);
-                for (int j = 0; j < nextShape.GetLength(1); j++)
-                {
-                    if (nextShape[i,j] == 1)
-                    {
-                        
-                        Console.Write("■");
-                    }
                     else
                     {
-                        Console.Write("  ");
+                        buffer.Draw(j, i, "  ");
                     }
-
                 }
-
             }
-
-
         }
-         
+//
+// public void ShowNextShape(int[,] next)
+    //  {
+    //      Console.SetCursorPosition(90, 3);
+    //      Console.WriteLine("[  Next  ]");
+    //       for (int i = 0; i < nextShape.GetLength(0); i++)
+    //       {
+    //           for (int j = 0; j < nextShape.GetLength(1); j++)
+    //           {
+    //               nextShape[i, j] = 0;
+    //           }
+    //       }
+    //
+    //
+    //       for (int i = 0; i < next.GetLength(0); i++)
+    //       {
+    //           nextShape[next[i, 0]-2, next[i, 1]-6] = 1;         
+    //       }
+    //
+    //       for (int i = 0; i < nextShape.GetLength(0); i++)
+    //       {
+    //           Console.SetCursorPosition(89, 5 + i);
+    //           for (int j = 0; j < nextShape.GetLength(1); j++)
+    //           {
+    //               if (nextShape[i,j] == 1)
+    //               {
+    //                   
+    //                   Console.Write("■");
+    //               }
+    //               else
+    //               {
+    //                   Console.Write("  ");
+    //               }
+    //
+    //           }
+    //
+    //       }
+    //
+    //
+    //   }
+//  
 
         public void SetMainShape(int[,] mainShape, int[,] map)
         {
@@ -151,168 +156,72 @@ namespace Tetris
         }
 
 
-       
-        public void DrawBaseMap(int[,] map, ConsoleColor color)
-      {
-            ConsoleColor originalColor = ConsoleColor.White;
-            Console.SetWindowSize(width, height);
-          int row=map.GetLength(0);
-          int col=map.GetLength(1);
-            level = score>=10?score / 10:1;
-            WriteHelp();
+      // 
+      //  public void DrawBaseMap(int[,] map, ConsoleColor color)
+     //{
+     //      ConsoleColor originalColor = ConsoleColor.White;
+     //      Console.SetWindowSize(width, height);
+     //    int row=map.GetLength(0);
+     //    int col=map.GetLength(1);
+     //      level = score>=10?score / 10:1;
+     //      WriteHelp();
+     //
+     //      for (int i = 0; i < map.GetLength(0); i++)
+     //      {
+     //          Console.SetCursorPosition(mapRow, mapCol + i);
+     //          if (i == 2)
+     //          {
+     //              for (int j = 0; j < map.GetLength(1); j++)
+     //              {
+     //                  Console.ForegroundColor = ConsoleColor.Red;
+     //                  Console.Write("■");
+     //              }
+     //              Console.ForegroundColor = originalColor;
+     //          }
+     //
+     //          else
+     //          {
+     //              for (int j = 0; j < map.GetLength(1); j++)
+     //              {
+     //
+     //                  if (map[i, j] == 1)
+     //                  {
+     //                      Console.ForegroundColor = ConsoleColor.Magenta;
+     //                      Console.Write("■");
+     //                      Console.ForegroundColor = originalColor;
+     //
+     //                      
+     //                  }
+     //
+     //                  else if (map[i, j] == 2)
+     //                  {
+     //                       Console.ForegroundColor = color;
+     //                       Console.Write("■");
+     //                       Console.ForegroundColor = originalColor;
+     //                     
+     //                  }
+     //
+     //                  else if (map[i, j] == 3)
+     //                  {
+     //                      Console.ForegroundColor = originalColor;
+     //                      Console.Write("■");
+     //
+     //                     
+     //                  }
+     //
+     //                  else
+     //                      Console.Write("  ");
+     //              }
+     //          }
+     //        Console.WriteLine();
+     //    }
+     //}//DrawBaseMap
+      //
 
-            for (int i = 0; i < map.GetLength(0); i++)
-            {
-                Console.SetCursorPosition(mapRow, mapCol + i);
-                if (i == 2)
-                {
-                    for (int j = 0; j < map.GetLength(1); j++)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.Write("■");
-                    }
-                    Console.ForegroundColor = originalColor;
-                }
-
-                else
-                {
-                    for (int j = 0; j < map.GetLength(1); j++)
-                    {
-
-                        if (map[i, j] == 1)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Magenta;
-                            Console.Write("■");
-                            Console.ForegroundColor = originalColor;
-
-                            
-                        }
-
-                        else if (map[i, j] == 2)
-                        {
-                             Console.ForegroundColor = color;
-                             Console.Write("■");
-                             Console.ForegroundColor = originalColor;
-                           
-                        }
-
-                        else if (map[i, j] == 3)
-                        {
-                            Console.ForegroundColor = originalColor;
-                            Console.Write("■");
-
-                           
-                        }
-
-                        else
-                            Console.Write("  ");
-                    }
-                }
-              Console.WriteLine();
-          }
-      }//DrawBaseMap
 
 
+      
 
-
-        int[,,] characters = new int[8, 5, 5]
-{
-    // 'G'
-    {
-        { 0, 1, 1, 1, 0 },
-        { 1, 0, 0, 0, 0 },
-        { 1, 0, 1, 1, 1 },
-        { 1, 0, 0, 0, 1 },
-        { 0, 1, 1, 1, 0 }
-    },
-    // 'A'
-    {
-        { 0, 1, 1, 1, 0 },
-        { 1, 0, 0, 0, 1 },
-        { 1, 1, 1, 1, 1 },
-        { 1, 0, 0, 0, 1 },
-        { 1, 0, 0, 0, 1 }
-    },
-    // 'M'
-    {
-        { 1, 0, 0, 0, 1 },
-        { 1, 1, 0, 1, 1 },
-        { 1, 0, 1, 0, 1 },
-        { 1, 0, 0, 0, 1 },
-        { 1, 0, 0, 0, 1 }
-    },
-    // 'E'
-    {
-        { 1, 1, 1, 1, 1 },
-        { 1, 0, 0, 0, 0 },
-        { 1, 1, 1, 1, 0 },
-        { 1, 0, 0, 0, 0 },
-        { 1, 1, 1, 1, 1 }
-    },
-    // 'O'
-    {
-        { 0, 1, 1, 1, 0 },
-        { 1, 0, 0, 0, 1 },
-        { 1, 0, 0, 0, 1 },
-        { 1, 0, 0, 0, 1 },
-        { 0, 1, 1, 1, 0 }
-    },
-    // 'V'
-    {
-        { 1, 0, 0, 0, 1 },
-        { 1, 0, 0, 0, 1 },
-        { 1, 0, 0, 0, 1 },
-        { 0, 1, 0, 1, 0 },
-        { 0, 0, 1, 0, 0 }
-    },
-    // 'E'
-    {
-        { 1, 1, 1, 1, 1 },
-        { 1, 0, 0, 0, 0 },
-        { 1, 1, 1, 1, 0 },
-        { 1, 0, 0, 0, 0 },
-        { 1, 1, 1, 1, 1 }
-    },
-    // 'R'
-    {
-        { 1, 1, 1, 1, 0 },
-        { 1, 0, 0, 0, 1 },
-        { 1, 1, 1, 1, 0 },
-        { 1, 0, 1, 0, 0 },
-        { 1, 0, 0, 1, 0 }
-    }
-};
-
-        public void DisplayGameOverMessage()
-        {
-            // Clear the console
-            Console.Clear();
-
-            // Get the dimensions of the console window
-            int windowWidth = Console.WindowWidth;
-            int windowHeight = Console.WindowHeight;
-
-            // Calculate the position to center the message
-            int messageWidth = 8 * 5 + 7; // 8 characters, each 5 columns wide, plus 7 spaces between them
-            int messageHeight = 5; // Each character is 5 rows high
-            int messageX = (windowWidth - messageWidth) / 2;
-            int messageY = (windowHeight - messageHeight) / 2;
-
-            // Set the cursor position and write the message
-            for (int row = 0; row < 5; row++)
-            {
-                Console.SetCursorPosition(messageX, messageY + row);
-                for (int i = 0; i < 8; i++)
-                {
-                    for (int col = 0; col < 5; col++)
-                    {
-                        Console.Write(characters[i, row, col] == 1 ? '■' : ' ');
-                    }
-                    if (i < 7)
-                        Console.Write(' '); // Character spacing
-                }
-            }
-        }
 
     }
 }

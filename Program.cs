@@ -44,12 +44,12 @@ namespace Tetris
         {
             if (!gameOver)
             {
-                Console.Clear();
+                //Console.Clear();
                 MoveDown();
                 Crush();
-                tetris.DrawBaseMap(map, colors[nextnumber]);
-                tetris.ShowNextShape(nextShape);
-                //RenderGame();
+                //tetris.DrawBaseMap(map, colors[nextnumber]);
+                //tetris.ShowNextShape(nextShape);
+                RenderGame();
             }
 
             else
@@ -340,9 +340,9 @@ namespace Tetris
             nextPivot= shapeList[nextnumber].GetPivot();
 
             //초기화 해 놓은 정보들 출력
-            tetris.ShowNextShape(nextShape);
-            tetris.SetMainShape(mainShape, map);
-            tetris.DrawBaseMap(map, colors[nextnumber]);
+            //tetris.ShowNextShape(nextShape,gameBoard);
+            //tetris.SetMainShape(mainShape, map);
+            //tetris.DrawBaseMap(map, colors[nextnumber],gameBoard);
             
             //아래로 떨어지고 움직이는 정보 interval 실행
             System.Timers.Timer timer = new System.Timers.Timer();
@@ -354,9 +354,7 @@ namespace Tetris
             //방향키 입력받기
             while (true)
             {
-                if (gameOver)
-                    break;
-
+               
                 ConsoleKeyInfo key = Console.ReadKey(true);
                 switch (key.Key)
                 {
@@ -375,11 +373,8 @@ namespace Tetris
                         MoveDown();
                         break;
                 }
-                //RenderGame();
+                RenderGame();
             }
-
-            Console.Clear();
-            Console.WriteLine("GAME OVER");
 
         }
     }

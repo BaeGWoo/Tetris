@@ -47,7 +47,7 @@ public class MyBuffer
             {
                 if (buffer[y, x] != previousBuffer[y, x])
                 {
-                    Console.SetCursorPosition(35+x,5+ y);
+                    Console.SetCursorPosition(35+x*2,5+ y);
                     Console.Write(buffer[y, x]);
                     previousBuffer[y, x] = buffer[y, x];
                 }
