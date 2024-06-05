@@ -5,6 +5,7 @@ public class MyBuffer
 {
     private string[,] buffer;
     private string[,] previousBuffer;
+    private int[,] Curbuffer;
     private int width;
     private int height;
     
@@ -15,8 +16,9 @@ public class MyBuffer
     {
         this.width = width;
         this.height = height;
-        buffer = new string[height*2, width*2];
-        previousBuffer = new string[height * 2, width * 2];
+        buffer = new string[height, width];
+        previousBuffer = new string[height, width ];
+        Curbuffer = new int[height, width ];
         Clear();
     }
 
@@ -39,19 +41,70 @@ public class MyBuffer
         }
     }
 
-    public void Render()
+    public void Render(ConsoleColor color)
     {
+        Console.ForegroundColor = ConsoleColor.White;
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
                 if (buffer[y, x] != previousBuffer[y, x])
                 {
-                    Console.SetCursorPosition(35+x*2,5+ y);
+                    Console.ForegroundColor = color;
+                    Console.SetCursorPosition(34+x*2,5+ y);
                     Console.Write(buffer[y, x]);
                     previousBuffer[y, x] = buffer[y, x];
                 }
             }
         }
+        Console.ForegroundColor = ConsoleColor.White;
+    }
+
+
+    public void Render(ConsoleColor color, int[,] map)
+    {
+        Console.ForegroundColor = color;
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                
+
+                if (map[y, x] != Curbuffer[y, x])
+                {
+                    Console.SetCursorPosition(34 + x * 2, 5 + y);
+                    if (map[y, x] == 1)
+                    {
+                        Console.Write("■");
+                    }
+                    else if (map[y, x] == 2)
+                    {
+                        Console.Write("■");
+                    }
+                    else if (map[y, x] == 3)
+                    {
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write("■");
+                        Console.ForegroundColor = color;
+                    }
+
+                    else if (map[y, x] == 4)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write("■");
+                        Console.ForegroundColor = color;
+                    }
+
+                    else
+                    {
+                        Console.Write("  ");
+                    }
+                    //Console.Write(buffer[y, x]);
+                    Curbuffer[y, x] = map[y, x];
+                }
+                
+            }
+        }
+        Console.ForegroundColor = ConsoleColor.White;
     }
 }
