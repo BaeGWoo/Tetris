@@ -19,7 +19,7 @@ namespace Tetris
       int mapCol = 5;       //map 초기화 위치 높이(y)
       #endregion
       
-       int level = 1;        //현재 단계 ->모양크기 || 내려오는 속도 조절
+       //int level = 1;        //현재 단계 ->모양크기 || 내려오는 속도 조절
        int score = 0;        //사라진 line의 수
       
        int[,] nextShape=new int[6,6];
@@ -33,10 +33,7 @@ namespace Tetris
             return score;
         }
 
-        public int GetLevel()
-        {
-            return level;
-        }
+       
 
         public int getWindowHeight()
         {
@@ -52,8 +49,8 @@ namespace Tetris
         {
             Console.ForegroundColor = ConsoleColor.White;
             int padding = 3;
-            Console.SetCursorPosition(padding, 4);
-            Console.WriteLine("Level " + level);
+           // Console.SetCursorPosition(padding, 4);
+           // Console.WriteLine("Level " + level);
             Console.SetCursorPosition(padding, 6);
             Console.WriteLine("Clear Line Number : " + score);
       
@@ -90,7 +87,7 @@ namespace Tetris
         {
             //ConsoleColor originalColor = ConsoleColor.White;
             //Console.ForegroundColor = color;
-            level = score >= 10 ? score / 10 : 1;
+           // level = score >= 10 ? score / 10 : 1;
            
 
             for (int i = 0; i < map.GetLength(0); i++)
@@ -173,7 +170,7 @@ namespace Tetris
           Console.SetWindowSize(width, height);
         int row=map.GetLength(0);
         int col=map.GetLength(1);
-          level = score>=10?score / 10:1;
+          //level = score>=10?score / 10:1;
           WriteHelp();
     
           for (int i = 0; i < map.GetLength(0); i++)

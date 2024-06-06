@@ -61,8 +61,10 @@ public class MyBuffer
     }
 
 
-    public void Render(ConsoleColor color, int[,] map)
+    public void Render(ConsoleColor color, int[,] map,bool keyCheck)
     {
+        if (!keyCheck)
+            return;
         Console.ForegroundColor = color;
         for (int y = 0; y < height; y++)
         {
@@ -107,4 +109,35 @@ public class MyBuffer
         }
         Console.ForegroundColor = ConsoleColor.White;
     }
+
+
+
+
+    public void CheckMap(int[,] map)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                if (map[y, x] != Curbuffer[y, x])
+                {
+                    Console.SetCursorPosition(34 + x * 2, 5 + y);
+
+                    if (map[y, x] != 2 || map[y, x] != 3)
+                    {
+                        Console.Write("  ");
+                    }
+
+                    //Console.Write(buffer[y, x]);
+                    Curbuffer[y, x] = map[y, x];
+                }
+
+            }
+        }
+
+
+    }
+
+
+
 }

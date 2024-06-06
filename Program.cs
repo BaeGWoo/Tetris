@@ -3,6 +3,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Timers;
 using System.Drawing;
 using System.Diagnostics;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace Tetris
 {
@@ -19,6 +20,8 @@ namespace Tetris
         static int[] mainPivot = new int[2];
         static int nextnumber;
         static int colorNumber;
+        static bool keyCheck = true;
+        static bool gameStart = false;
         static int[] nextPivot = new int[2];
         static int[,] map = new int[25, 18];
         static Random random = new Random();
@@ -32,12 +35,90 @@ namespace Tetris
             ConsoleColor.DarkYellow
         };
 
+        public static void GameOverImage()
+        {
+            Console.Clear();
+            string[] gameOver = new string[]
+            {
+            "  ######    ###    ##     ## ########     #######   ##   ##  ######## ######## ",
+            " ##    ##  ## ##   ###   ### ##          ##     ##  ##   ##  ##       ##     ##",
+            " ##       ##   ##  #### #### ##          ##     ##  ##   ##  ##       ##     ##",
+            " ##   ### ##     ## ## ### ## ######      ##     ##  ##  ##  ######   ######## ",
+            " ##    ## ######### ##     ## ##          ##     ##  ##  ##  ##       ##   ## ",
+            " ##    ## ##     ## ##     ## ##          ##     ##  ## ##   ##       ##    ##",
+            "  ###  ##  ##     ## ##     ## ########     #######   ##     ## ####  ##      ##"
+            };
+
+            int startX = (Console.WindowWidth - gameOver[0].Length) / 2;
+            int startY = Console.WindowHeight / 2 - 4;
+
+            Console.ForegroundColor = ConsoleColor.White;
+
+            for (int i = 0; i < gameOver.Length; i++)
+            {
+                Console.SetCursorPosition(startX, startY + i);
+                Console.Write(gameOver[i]);
+            }
+
+            string scoreText = $"Score: {tetris.GetScore()}";
+            int scoreX = (Console.WindowWidth - scoreText.Length) / 2;
+            int scoreY = startY + gameOver.Length + 2;
+
+            Console.SetCursorPosition(scoreX, scoreY);
+            Console.Write(scoreText);
+
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("\n\n\n\n\n\n\n");
+        }
+        public static void GameStartImage()
+        {
+            Console.Clear();
+            string[] gaemStart = new string[]
+            {
+            "##########   #######  ###########  ##########   #########   #######    ##########",
+            "    ##       ##           ##       ##           ##     ##     ##       ##      ",
+            "    ##       ##           ##       ##           ##     ##     ##       ##       ",
+            "    ##       #######      ##       ########     #########     ##       ########## ",
+            "    ##       ##           ##       ##           ##  ##        ##               ## ",
+            "    ##       ##           ##       ##           ##    ##      ##       ##      ## ",
+            "    ##       #######      ##       ###########  ##     ##   #######    ##########  "
+            };
+
+            int startX = (Console.WindowWidth - gaemStart[0].Length) / 2;
+            int startY = Console.WindowHeight / 2 - 4;
+
+            Console.ForegroundColor = ConsoleColor.White;
+
+            for (int i = 0; i < gaemStart.Length; i++)
+            {
+                Console.SetCursorPosition(startX, startY + i);
+                Console.Write(gaemStart[i]);
+            }
+
+            string scoreText = $"Score: {tetris.GetScore()}";
+            int scoreX = (Console.WindowWidth - scoreText.Length) / 2;
+            int scoreY = startY + gaemStart.Length + 2;
+
+            string instructionText = "Press any key to start";
+            int instructionX = (Console.WindowWidth - instructionText.Length) / 2;
+            int instructionY = startY + gaemStart.Length + 2;
+
+            Console.SetCursorPosition(instructionX, instructionY);
+            Console.Write(instructionText);
+
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
+
+
+
         private static void RenderGame()
         {
             gameBoard.Clear();
             //tetris.DrawBaseMap(map, colors[nextnumber], gameBoard);
             //tetris.ShowNextShape(nextShape, gameBoard);
-            gameBoard.Render(colors[colorNumber%colors.Length],map);
+            gameBoard.Render(colors[colorNumber%colors.Length],map,keyCheck);
+            //gameBoard.CheckMap(map);
             Console.CursorVisible = false;
         }
 
@@ -47,32 +128,35 @@ namespace Tetris
             if (!gameOver)
             {
                 //Console.Clear();
-                Move(1,0);
+                Move(1,0, keyCheck);
+                keyCheck = true;
                 Crush();
                 //tetris.DrawBaseMap(map, colors[nextnumber]);
                 //tetris.ShowNextShape(nextShape);
                 RenderGame();
+               
             }
 
             else
             {
-                Console.Clear();
-                string message = "GAME OVER";
-
-                // Calculate the position to center the message
-                int messageX = (tetris.getWindowWidth() - message.Length) / 2;
-                int messageY = tetris.getWindowHeight() / 2;
-
-
-                Console.SetCursorPosition(messageX, messageY);
-                Console.WriteLine("GAME OVER\n");
-                Console.SetCursorPosition(messageX-3, messageY+5);
-                Console.WriteLine("당신의 점수는 : "+tetris.GetScore());
-                for(int i = 0; i < 5; i++)
-                {
-                    Console.WriteLine("\n");
-                }
-                //tetris.DisplayGameOverMessage();
+                GameOverImage();
+               //Console.Clear();
+               //string message = "GAME OVER";
+               //
+               //// Calculate the position to center the message
+               //int messageX = (tetris.getWindowWidth() - message.Length) / 2;
+               //int messageY = tetris.getWindowHeight() / 2;
+               //
+               //
+               //Console.SetCursorPosition(messageX, messageY);
+               //Console.WriteLine("GAME OVER\n");
+               //Console.SetCursorPosition(messageX-3, messageY+5);
+               //Console.WriteLine("당신의 점수는 : "+tetris.GetScore());
+               //for(int i = 0; i < 5; i++)
+               //{
+               //    Console.WriteLine("\n");
+               //}
+               ////tetris.DisplayGameOverMessage();
                 Environment.Exit(0);
             }
         }
@@ -94,8 +178,10 @@ namespace Tetris
             
         }
 
-        public static void Move(int x, int y)
+        public static void Move(int x, int y,bool keyCheck)
         {
+            if (!keyCheck)
+                return;
             int[,] temp = new int[4, 2];
             for (int i = 0; i < mainShape.GetLength(0); i++)
             {
@@ -105,7 +191,7 @@ namespace Tetris
 
             if (CheckMove(temp, map))
             {
-
+                gameBoard.Render(colors[colorNumber % colors.Length], map,keyCheck);
                 for (int i = 0; i < mainShape.GetLength(0); i++)
                 {
                     if (map[mainShape[i, 0], mainShape[i, 1]] == 4)
@@ -126,9 +212,9 @@ namespace Tetris
 
             else
             {
+               
                 if (x == 1)
-                {
-
+                {                  
                     for (int i = 0; i < mainShape.GetLength(0); i++)
                     {
                         map[mainShape[i, 0], mainShape[i, 1]] = 1;
@@ -153,7 +239,7 @@ namespace Tetris
 
                     int tempnumber = random.Next(0, 5);
 
-                    nextnumber = (tempnumber+nextnumber) % shapeList.Count;
+                    nextnumber = (tempnumber + nextnumber) % shapeList.Count;
 
 
                     tempNext = shapeList[nextnumber].GetShapeType();
@@ -168,8 +254,10 @@ namespace Tetris
                     nextPivot[1] = tempPivot[1];
 
                     tetris.ShowNextShape(nextShape);
-                    colorNumber=random.Next(0, 10);
+                    colorNumber = random.Next(0, 10);
+                    keyCheck = true;
                 }
+                
             }
         }
 
@@ -178,12 +266,14 @@ namespace Tetris
             for(int i = 0; i < temp.GetLength(0); i++)
             {
                 if (temp[i, 0] < 0 || temp[i, 0] >= map.GetLength(0) - 1 || temp[i, 1] <= 0 || temp[i, 1] >= map.GetLength(1) - 1)
-                {                   
+                {
+                    keyCheck = false;
                     return false;
                 }
 
                 if (map[temp[i,0], temp[i, 1]] == 1)
-                {                 
+                {
+                   keyCheck = false;
                     return false;
                 }
             }         
@@ -300,6 +390,11 @@ namespace Tetris
             shapeList.Add(new Shape(Type4, Typ4Pivot));
             shapeList.Add(new Shape(Type5, Typ5Pivot));
 
+           
+                GameStartImage();
+                Console.ReadKey();
+            Console.Clear();
+            
             SetMap(map); //맵 기본 모양 초기화
             int number = random.Next(0, shapeList.Count);
             mainShape = shapeList[number].GetShapeType(); //mainShape 초기화
@@ -322,30 +417,36 @@ namespace Tetris
 
             tetris.WriteHelp();
             tetris.ShowNextShape(nextShape);
-
+            RenderGame();
+           
             //방향키 입력받기
             while (true)
             {
-               
+                keyCheck = true;
+              
                 ConsoleKeyInfo key = Console.ReadKey(true);
-                switch (key.Key)
-                {
-                    case ConsoleKey.UpArrow:
-                        Rotate();
-                        break;
+                    switch (key.Key)
+                    {
+                        case ConsoleKey.UpArrow:
+                            Rotate();
+                            break;
 
-                    case ConsoleKey.LeftArrow:
-                        Move(0,-1);
-                        break;
+                        case ConsoleKey.LeftArrow:
+                            Move(0, -1, keyCheck);
+                            break;
 
-                    case ConsoleKey.RightArrow:
-                        Move(0,1);
-                        break;
-                    case ConsoleKey.DownArrow:
-                        Move(1,0);
-                        break;
-                }
-                RenderGame();
+                        case ConsoleKey.RightArrow:
+                            Move(0, 1, keyCheck);
+                            break;
+                        case ConsoleKey.DownArrow:
+                            Move(1, 0, keyCheck);
+                            break;
+                    }
+                    RenderGame();
+                
+              
+                    
+              
             }
 
         }
