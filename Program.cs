@@ -20,8 +20,8 @@ namespace Tetris
         static int[] mainPivot = new int[2];
         static int nextnumber;
         static int colorNumber;
-        static bool keyCheck = true;
-        static bool gameStart = false;
+        static int prevColor;
+        static bool keyCheck = true;       
         static int[] nextPivot = new int[2];
         static int[,] map = new int[25, 18];
         static Random random = new Random();
@@ -32,7 +32,7 @@ namespace Tetris
             ConsoleColor.Blue,
             ConsoleColor.Yellow,
             ConsoleColor.Cyan,
-            ConsoleColor.DarkYellow
+            ConsoleColor.Magenta
         };
 
         public static void GameOverImage()
@@ -111,56 +111,34 @@ namespace Tetris
 
 
 
-
+        //더블버퍼로 이용할 함수 실행
         private static void RenderGame()
         {
-            gameBoard.Clear();
-            //tetris.DrawBaseMap(map, colors[nextnumber], gameBoard);
-            //tetris.ShowNextShape(nextShape, gameBoard);
-            gameBoard.Render(colors[colorNumber%colors.Length],map,keyCheck);
-            //gameBoard.CheckMap(map);
+            gameBoard.Clear();           
+            gameBoard.Render(colors[colorNumber%colors.Length], colors[prevColor % colors.Length], map,keyCheck);
             Console.CursorVisible = false;
         }
 
-
+        //인터벌 실행되는 함수
         private static void CountDown(object sender, ElapsedEventArgs e)
         {
             if (!gameOver)
-            {
-                //Console.Clear();
+            {                
                 Move(1,0, keyCheck);
                 keyCheck = true;
-                Crush();
-                //tetris.DrawBaseMap(map, colors[nextnumber]);
-                //tetris.ShowNextShape(nextShape);
+                Crush();              
                 RenderGame();
                
             }
 
             else
             {
-                GameOverImage();
-               //Console.Clear();
-               //string message = "GAME OVER";
-               //
-               //// Calculate the position to center the message
-               //int messageX = (tetris.getWindowWidth() - message.Length) / 2;
-               //int messageY = tetris.getWindowHeight() / 2;
-               //
-               //
-               //Console.SetCursorPosition(messageX, messageY);
-               //Console.WriteLine("GAME OVER\n");
-               //Console.SetCursorPosition(messageX-3, messageY+5);
-               //Console.WriteLine("당신의 점수는 : "+tetris.GetScore());
-               //for(int i = 0; i < 5; i++)
-               //{
-               //    Console.WriteLine("\n");
-               //}
-               ////tetris.DisplayGameOverMessage();
+                GameOverImage();              
                 Environment.Exit(0);
             }
         }
 
+        //테트리스 보드 세팅
         public static void SetMap(int[,] map)
         {
             for (int i = 0; i < map.GetLength(0); i++)
@@ -178,6 +156,7 @@ namespace Tetris
             
         }
 
+        //방향키에 따른 테트리스 블록 이동 설정
         public static void Move(int x, int y,bool keyCheck)
         {
             if (!keyCheck)
@@ -191,7 +170,7 @@ namespace Tetris
 
             if (CheckMove(temp, map))
             {
-                gameBoard.Render(colors[colorNumber % colors.Length], map,keyCheck);
+                gameBoard.Render(colors[colorNumber % colors.Length], colors[prevColor % colors.Length], map,keyCheck);
                 for (int i = 0; i < mainShape.GetLength(0); i++)
                 {
                     if (map[mainShape[i, 0], mainShape[i, 1]] == 4)
@@ -254,13 +233,15 @@ namespace Tetris
                     nextPivot[1] = tempPivot[1];
 
                     tetris.ShowNextShape(nextShape);
-                    colorNumber = random.Next(0, 10);
+                    prevColor = colorNumber;
+                    colorNumber = random.Next(0, 20);
                     keyCheck = true;
                 }
                 
             }
         }
 
+        //테트리스 블록의 이동 및 회전 가능여부
         public static bool CheckMove(int[,] temp, int[,] map)
         {
             for(int i = 0; i < temp.GetLength(0); i++)
@@ -279,9 +260,8 @@ namespace Tetris
             }         
             return true;
         }
-
-       
-
+     
+        //테트리스 블록 파괴 설정
         public static void Crush()
         {
             for(int i = 0; i < map.GetLength(0)-1; i++)
@@ -306,6 +286,7 @@ namespace Tetris
            
         }
 
+        //테트리스 블록 파괴 후 전체블록 다운
         public static void MapDown(int num)
         {
             for(int i = num; i >= 0; i--)
@@ -321,10 +302,9 @@ namespace Tetris
             }
             tetris.ScoreUp();
             tetris.WriteHelp();
-        }
+        }      
 
-       
-
+        //테트리스 블록 회전 설정
         public static void Rotate()
         {
             int[,] Rtemp = new int[4, 2];
@@ -390,24 +370,28 @@ namespace Tetris
             shapeList.Add(new Shape(Type4, Typ4Pivot));
             shapeList.Add(new Shape(Type5, Typ5Pivot));
 
-           
-                GameStartImage();
-                Console.ReadKey();
+            //오프닝 키 입력받기
+            GameStartImage();
+            Console.ReadKey();
             Console.Clear();
-            
-            SetMap(map); //맵 기본 모양 초기화
+
+
+            //맵 기본 모양 초기화
+            SetMap(map); 
+
+
+            //mainShape 초기화
             int number = random.Next(0, shapeList.Count);
-            mainShape = shapeList[number].GetShapeType(); //mainShape 초기화
+            mainShape = shapeList[number].GetShapeType(); 
             mainPivot = shapeList[number].GetPivot();
 
+
+            //nextShape 초기화
             nextnumber = (number+1)% shapeList.Count;
-            nextShape = shapeList[nextnumber].GetShapeType(); //nextShape 초기화
+            nextShape = shapeList[nextnumber].GetShapeType(); 
             nextPivot= shapeList[nextnumber].GetPivot();
 
-            //초기화 해 놓은 정보들 출력
-            //tetris.ShowNextShape(nextShape,gameBoard);
-            //tetris.SetMainShape(mainShape, map);
-            //tetris.DrawBaseMap(map, colors[nextnumber],gameBoard);
+           
             
             //아래로 떨어지고 움직이는 정보 interval 실행
             System.Timers.Timer timer = new System.Timers.Timer();
@@ -415,10 +399,13 @@ namespace Tetris
             timer.Elapsed += new ElapsedEventHandler(CountDown);
             timer.Start();
 
+
+            //화면설정
             tetris.WriteHelp();
             tetris.ShowNextShape(nextShape);
             RenderGame();
            
+
             //방향키 입력받기
             while (true)
             {
@@ -442,13 +429,8 @@ namespace Tetris
                             Move(1, 0, keyCheck);
                             break;
                     }
-                    RenderGame();
-                
-              
-                    
-              
-            }
-
-        }
-    }
-}
+                    RenderGame();     
+            }//while()
+        }//static Main()
+    }//Class Program
+}//namespace TETRIS
