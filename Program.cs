@@ -19,6 +19,7 @@ namespace Tetris
         static int[,] mainShape = new int[4, 2];
         static int[] mainPivot = new int[2];
         static int nextnumber;
+        static int[] ShapeNumber;
         static int colorNumber;
         static int prevColor;
         static bool keyCheck = true;       
@@ -109,6 +110,35 @@ namespace Tetris
             Console.ForegroundColor = ConsoleColor.White;
         }
 
+        public static int GetRandomNumber(int prev)
+        {
+            int total = 0;
+            int size = ShapeNumber.Length;
+            int min = ShapeNumber[0];
+            int start=0;
+            for (int i = 0; i < size; i++)
+            {
+                if (ShapeNumber[i] < min)
+                    start = i;
+                total+= ShapeNumber[i];
+            }
+            
+           
+
+            for (int i=0;i< size; i++)
+            {
+                double count = ShapeNumber[i];
+                double totalNum = total+1;
+
+                double value = 1 - count / totalNum;
+                int result = (int)(value * 100);
+
+                if (random.Next(0, 101) < result)
+                    return i;
+            }
+            
+            return start;
+        }
 
 
         //더블버퍼로 이용할 함수 실행
@@ -212,14 +242,16 @@ namespace Tetris
                     mainPivot[1] = nextPivot[1];
 
                     tetris.SetMainShape(mainShape, map);
+                    ShapeNumber[nextnumber]++;
 
                     int[,] tempNext = new int[4, 2];
                     int[] tempPivot = new int[2];
 
-                    int tempnumber = random.Next(0, 5);
+                    //int tempnumber = random.Next(0, 5);
 
-                    nextnumber = (tempnumber + nextnumber) % shapeList.Count;
-
+                    //nextnumber = (tempnumber + nextnumber) % shapeList.Count;
+                    nextnumber = GetRandomNumber(nextnumber);
+                    //ShapeNumber[nextnumber]++;
 
                     tempNext = shapeList[nextnumber].GetShapeType();
                     tempPivot = shapeList[nextnumber].GetPivot();
@@ -234,7 +266,8 @@ namespace Tetris
 
                     tetris.ShowNextShape(nextShape);
                     prevColor = colorNumber;
-                    colorNumber = random.Next(0, 20);
+                    //colorNumber = random.Next(0, 20);
+                    colorNumber=(colorNumber+1)%colors.Length;
                     keyCheck = true;
                 }
                 
@@ -350,25 +383,26 @@ namespace Tetris
         static void Main(string[] args)
         {
             int[,] Type1 = new int[4, 2] { { 4, 9 }, { 5, 8 }, { 5, 9 }, { 5, 10 } };
-            int[] Typ1Pivot = new int[2] { 5, 9 };
+            int[] Typ1Pivot = new int[2] { 5, 9 };//ㅗ
 
             int[,] Type2 = new int[4, 2] { { 4, 8 }, { 5, 8 }, { 5, 9 }, { 5, 10 } };
-            int[] Typ2Pivot = new int[2] {5, 9 };
+            int[] Typ2Pivot = new int[2] {5, 9 };//ㄴ
 
             int[,] Type3 = new int[4, 2] { { 4, 8 }, { 4, 9 }, { 5, 9 }, { 5, 10 } };
-            int[] Typ3Pivot = new int[2] { 5, 9 };
+            int[] Typ3Pivot = new int[2] { 5, 9 };//ㄱㄴ
 
             int[,] Type4 = new int[4, 2] { { 4, 7 }, { 4, 8 }, { 4, 9 }, { 4, 10 } };
-            int[] Typ4Pivot = new int[2] { 4, 9 };
+            int[] Typ4Pivot = new int[2] { 4, 9 };//ㅡ
 
             int[,] Type5 = new int[4, 2] { { 4, 8 }, { 4, 9 }, { 5, 8 }, { 5, 9 } };
-            int[] Typ5Pivot = new int[2] { -10, -10 };
+            int[] Typ5Pivot = new int[2] { -10, -10 };//ㅁ
 
             shapeList.Add(new Shape(Type1, Typ1Pivot));
             shapeList.Add(new Shape(Type2, Typ2Pivot));
             shapeList.Add(new Shape(Type3, Typ3Pivot));
             shapeList.Add(new Shape(Type4, Typ4Pivot));
             shapeList.Add(new Shape(Type5, Typ5Pivot));
+            ShapeNumber=new int[shapeList.Count];
 
             //오프닝 키 입력받기
             GameStartImage();
@@ -377,22 +411,25 @@ namespace Tetris
 
 
             //맵 기본 모양 초기화
-            SetMap(map); 
+            SetMap(map);
+            colorNumber = random.Next(0, 20);
+            prevColor = colorNumber;
 
 
             //mainShape 초기화
             int number = random.Next(0, shapeList.Count);
             mainShape = shapeList[number].GetShapeType(); 
             mainPivot = shapeList[number].GetPivot();
-
+            ShapeNumber[number]++;
 
             //nextShape 초기화
-            nextnumber = (number+1)% shapeList.Count;
+            //nextnumber = (number+1)% shapeList.Count;
+            nextnumber = GetRandomNumber(number);
             nextShape = shapeList[nextnumber].GetShapeType(); 
             nextPivot= shapeList[nextnumber].GetPivot();
+            ShapeNumber[nextnumber]++;
 
-           
-            
+
             //아래로 떨어지고 움직이는 정보 interval 실행
             System.Timers.Timer timer = new System.Timers.Timer();
             timer.Interval = 500;
